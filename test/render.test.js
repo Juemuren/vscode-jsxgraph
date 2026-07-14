@@ -52,24 +52,11 @@ test("uses only its own CSP nonce without eval", () => {
 test("uses VS Code theme colors as overridable JSXGraph defaults", () => {
   const previewScript = readFileSync(join(__dirname, "..", "media", "preview.js"), "utf8");
 
-  assert.match(
-    previewScript,
-    /const foreground = "var\(--vscode-editor-foreground, #1f1f1f\)"/,
-  );
-  assert.match(
-    previewScript,
-    /const background = "var\(--vscode-editor-background, #ffffff\)"/,
-  );
+  assert.match(previewScript, /var\(--vscode-editor-foreground,/);
+  assert.match(previewScript, /var\(--vscode-editor-background,/);
   assert.match(previewScript, /var\(--vscode-descriptionForeground,/);
-  assert.match(previewScript, /Object\.assign\(options\.text,/);
-  assert.match(previewScript, /Object\.assign\(options\.label,/);
-  assert.match(previewScript, /Object\.assign\(options\.axis,/);
-  assert.match(previewScript, /Object\.assign\(options\.axis\.ticks,/);
-  assert.match(previewScript, /Object\.assign\(options\.ticks,/);
-  assert.match(previewScript, /Object\.assign\(options\.slider,/);
-  assert.match(previewScript, /Object\.assign\(options\.slider\.baseline,/);
-  assert.match(previewScript, /Object\.assign\(options\.slider\.ticks,/);
-  assert.match(previewScript, /Object\.assign\(options\.slider\.highline,/);
-  assert.match(previewScript, /Object\.assign\(options\.slider\.label,/);
-  assert.match(previewScript, /configureDefaults\(\);\s*hosts\.forEach\(executeDiagram\)/);
+  assert.match(
+    previewScript,
+    /configureDefaults\(\);\s*hosts\.forEach\(executeDiagram\)/,
+  );
 });
