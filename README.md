@@ -34,7 +34,8 @@ A VS Code extension that renders code blocks marked with `jsxgraph` in Markdown 
 
 ### From extension marketplace
 
-Not yet available.
+- VSCode Marketplace: Not yet available
+- Open VSX: <https://open-vsx.org/extension/raind/vscode-jsxgraph>
 
 ### From source code
 

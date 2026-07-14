@@ -34,7 +34,8 @@
 
 ### 从扩展市场安装
 
-暂未上架。
+- VSCode Marketplace: 暂未上架
+- Open VSX: <https://open-vsx.org/extension/raind/vscode-jsxgraph>
 
 ### 从源代码安装
 
