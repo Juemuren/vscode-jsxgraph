@@ -9,6 +9,8 @@ providing JavaScript language features inside those blocks.
 - Refresh diagrams automatically when the Markdown document changes.
 - Execute diagram code under VS Code's existing CSP without `eval`,
   `new Function`, or disabling Markdown preview security.
+- JavaScript syntax highlighting, completion, and hover documentation inside
+  `jsxgraph` fences, including typed `JXG` and `BOARDID` globals.
 
 ## Usage
 
@@ -41,11 +43,6 @@ preview page. Rendering errors are shown in place of the corresponding diagram.
 
 For a ready-to-run document, open [examples/basic.md](examples/basic.md) in the
 Extension Development Host and open the built-in Markdown preview.
-
-## Planned features
-
-- Syntax highlighting for `jsxgraph` fenced code blocks.
-- JavaScript completion and hover information with JSXGraph APIs in scope.
 
 See [TODO.md](TODO.md) for the initial requirements.
 

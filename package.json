@@ -30,6 +30,18 @@
   "main": "./out/extension.js",
   "contributes": {
     "markdown.markdownItPlugins": true,
+    "grammars": [
+      {
+        "scopeName": "jsxgraph.markdown.injection",
+        "path": "./syntaxes/jsxgraph-markdown.json",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.javascript": "javascript"
+        }
+      }
+    ],
     "markdown.previewScripts": [
       "./node_modules/jsxgraph/distrib/jsxgraphcore.js",
       "./media/preview.js"
@@ -50,10 +62,10 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.15.0",
     "@types/vscode": "^1.100.0",
-    "markdown-it": "^14.3.0",
-    "typescript": "^5.8.3"
+    "markdown-it": "^14.3.0"
   },
   "dependencies": {
-    "jsxgraph": "^1.12.2"
+    "jsxgraph": "^1.12.2",
+    "typescript": "^5.8.3"
   }
 }

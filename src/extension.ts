@@ -8,6 +8,14 @@ export interface MarkdownItExtensionApi {
 }
 
 export function activate(_context?: ExtensionContext): MarkdownItExtensionApi {
+  if (_context) {
+    // Keep the Markdown-It entry point usable outside VS Code (notably in the
+    // renderer unit tests) by loading the editor-only code lazily.
+    const { registerLanguageFeatures } = require("./languageService") as typeof import(
+      "./languageService"
+    );
+    registerLanguageFeatures(_context);
+  }
   return { extendMarkdownIt };
 }
 

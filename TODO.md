@@ -12,7 +12,7 @@
 ```
 ````
 
-实现方式
+### 渲染实现方式
 
 - 通过 VS Code 的 `markdown.markdownItPlugins` 扩展原生 Markdown 预览，将
   `jsxgraph` fenced code block 转换为具有唯一 ID 的 JSXGraph 容器；源码使用
@@ -36,10 +36,37 @@
 
 ## 语言服务
 
-在代码块内部提供语言服务，包括
+在 `jsxgraph` 代码块内部提供语言服务，包括
 
 - 语法高亮
 - 代码补全
 - 悬浮文档
 
-最好能够借用 VSCode 已有的 JavaScript 插件，通过将 jsxgraph 内的代码识别为 JavaScript 代码，并导入 JSXGraph 导出的函数到代码补全的上下文里，从而自动让 VSCode 实现语法高亮、代码补全和悬浮文档。
+### 语言服务实现方式
+
+- 通过 `contributes.grammars` 注册 Markdown TextMate 注入语法，将
+  `jsxgraph` fenced code block 的内容标记为
+  `meta.embedded.block.javascript`，并通过 `embeddedLanguages` 映射为
+  `javascript`。因此代码块使用 VS Code 已有的 JavaScript 语法规则进行高亮。
+- 扩展激活后，为 `file` 和 `untitled` 两种 Markdown 文档注册 completion 和
+  hover provider。请求只在 `jsxgraph` 代码块内容范围内生效，不影响 Markdown
+  正文和其他 fenced code block。
+- 每次请求时扫描 Markdown fence。代码块之外的字符替换为空格，但保留所有换行；
+  代码块内容保持原样。生成的虚拟 JavaScript 与 Markdown 中的代码具有完全相同的
+  offset，因此无需进行易出错的行列转换，也支持多个代码块和未闭合的末尾代码块。
+- 使用扩展自带的 TypeScript `LanguageService` 分析虚拟 JavaScript。在虚拟源码末尾
+  注入以下类型上下文，且不改变 Markdown 原有位置：
+
+  ```javascript
+  const JXG = require("jsxgraph");
+  const BOARDID = /** @type {string} */ ("");
+  ```
+
+- 虚拟文件放在扩展安装目录中，使 `require("jsxgraph")` 始终解析到扩展自带的
+  JSXGraph 及其 `index.d.ts`；用户的 Markdown 项目不需要另外安装 JSXGraph。
+- completion provider 返回 TypeScript 推导出的变量、属性、方法和类型。候选项的
+  签名与文档只在 VS Code 选中该候选项时延迟解析，避免一次性查询大量 JSXGraph
+  成员造成卡顿。
+- hover provider 使用 TypeScript quick info 返回推导后的签名及声明文件中的 JSDoc。
+  例如，由 `JXG.JSXGraph.initBoard` 得到的变量会被推导为 `JXG.Board`，后续可继续
+  补全和查看 `board.create` 等成员。
