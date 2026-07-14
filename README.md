@@ -23,6 +23,7 @@ A VS Code extension that renders [JSXGraph](https://github.com/jsxgraph/jsxgraph
 ## Highlights
 
 - **Native Markdown preview integration**: Renders `jsxgraph` code blocks directly in VS Code's built-in Markdown preview.
+- **Lightweight TypeScript language service**: Reuses VS Code's built-in TypeScript language service, avoiding a duplicate runtime and standard library in the extension to reduce its installed size.
 - **JSXGraph interactions preserved**: Supports dragging elements, panning the board, and zooming with the mouse wheel or touch gestures, depending on the board configuration.
 - **VS Code theme integration**: Uses the current theme for the default colors of text, axes, sliders, and other elements, while allowing board code to override them.
 - **Responsive width**: Fills the available width of the preview and updates automatically when the container is resized.

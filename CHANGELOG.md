@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- Reuse VS Code's built-in TypeScript language service for completion and hover
+  support in `jsxgraph` code blocks.
+- Provide JSXGraph-aware types together with VS Code's standard JavaScript and
+  DOM language features without bundling a separate TypeScript runtime.
+- Reduce the extension package size by excluding unnecessary TypeScript,
+  JSXGraph, documentation, and example assets.
+
 ## 0.1.0
 
 - Adapt JSXGraph board backgrounds, text, labels, axes, ticks, and sliders to
