@@ -38,14 +38,6 @@
       strokeColor: foreground,
       highlightStrokeColor: foreground,
     });
-    Object.assign(options.axis, {
-      strokeColor: mutedForeground,
-      highlightStrokeColor: foreground,
-    });
-    Object.assign(options.axis.ticks, {
-      strokeColor: mutedForeground,
-      highlightStrokeColor: foreground,
-    });
     Object.assign(options.ticks, {
       strokeColor: mutedForeground,
       highlightStrokeColor: foreground,
