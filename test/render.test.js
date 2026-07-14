@@ -23,7 +23,9 @@ test("renders jsxgraph fences as nonce-execution hosts", () => {
 
 test("assigns a unique BOARDID host to each diagram", () => {
   const markdown = extendMarkdownIt(new MarkdownIt());
-  const html = markdown.render("```jsxgraph\nfirst();\n```\n```jsxgraph\nsecond();\n```\n");
+  const html = markdown.render(
+    "```jsxgraph\nfirst();\n```\n```jsxgraph\nsecond();\n```\n",
+  );
 
   assert.match(html, /data-jsxgraph-board-id="jsxgraph-board-1"/);
   assert.match(html, /data-jsxgraph-board-id="jsxgraph-board-2"/);
@@ -39,18 +41,27 @@ test("leaves other fenced languages unchanged", () => {
 });
 
 test("uses only its own CSP nonce without eval", () => {
-  const previewScript = readFileSync(join(__dirname, "..", "media", "preview.js"), "utf8");
+  const previewScript = readFileSync(
+    join(__dirname, "..", "media", "preview.js"),
+    "utf8",
+  );
 
-  assert.match(previewScript, /document\.currentScript && document\.currentScript\.nonce/);
+  assert.match(previewScript, /document\.currentScript\?\.nonce/);
   assert.match(previewScript, /script\.nonce = previewNonce/);
   assert.match(previewScript, /script\.textContent =/);
   assert.match(previewScript, /vscode\.markdown\.updateContent/);
   assert.match(previewScript, /JSXGraph\.freeBoard/);
-  assert.doesNotMatch(previewScript, /\beval\s*\(|new Function|querySelectorAll\("script\[nonce\]"\)/);
+  assert.doesNotMatch(
+    previewScript,
+    /\beval\s*\(|new Function|querySelectorAll\("script\[nonce\]"\)/,
+  );
 });
 
 test("uses VS Code theme colors as overridable JSXGraph defaults", () => {
-  const previewScript = readFileSync(join(__dirname, "..", "media", "preview.js"), "utf8");
+  const previewScript = readFileSync(
+    join(__dirname, "..", "media", "preview.js"),
+    "utf8",
+  );
 
   assert.match(previewScript, /var\(--vscode-editor-foreground,/);
   assert.match(previewScript, /var\(--vscode-editor-background,/);

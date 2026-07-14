@@ -1,4 +1,6 @@
+// biome-ignore lint/complexity/useArrowFunction: Keep a classic-script IIFE for VS Code's Markdown preview.
 (function () {
+  // biome-ignore lint/suspicious/noRedundantUseStrict: This preview asset is loaded as a classic script, not an ES module.
   "use strict";
 
   const controllerKey = "__jsxgraphMarkdownController";
@@ -9,7 +11,7 @@
 
   // Capture only the nonce granted to this contributed preview script. We do
   // not scan unrelated scripts or parse the CSP meta tag for credentials.
-  const previewNonce = document.currentScript && document.currentScript.nonce;
+  const previewNonce = document.currentScript?.nonce;
   const renderedSources = new WeakMap();
   const managedBoards = new Map();
   const runnerName = `__jsxgraphMarkdownRun_${Math.random().toString(36).slice(2)}`;
@@ -70,13 +72,15 @@
 
   function decodeSource(encoded) {
     const binary = window.atob(encoded);
-    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (character) =>
+      character.charCodeAt(0),
+    );
     return new TextDecoder().decode(bytes);
   }
 
   function findHost(boardId) {
     const boardElement = document.getElementById(boardId);
-    return boardElement && boardElement.closest(".jsxgraph-preview");
+    return boardElement?.closest(".jsxgraph-preview");
   }
 
   function showError(boardId, error) {
@@ -86,7 +90,8 @@
     }
 
     const output = host.querySelector(".jsxgraph-error");
-    const message = error instanceof Error ? error.stack || error.message : String(error);
+    const message =
+      error instanceof Error ? error.stack || error.message : String(error);
     host.classList.add("has-error");
     if (output instanceof HTMLElement) {
       output.textContent = `JSXGraph render failed: ${message}`;
@@ -104,7 +109,7 @@
   }
 
   function findBoard(boardId) {
-    const registries = [window.JXG && window.JXG.boards, window.JXG?.JSXGraph?.boards];
+    const registries = [window.JXG?.boards, window.JXG?.JSXGraph?.boards];
     for (const registry of registries) {
       if (!registry || typeof registry !== "object") {
         continue;
@@ -112,7 +117,8 @@
       for (const board of Object.values(registry)) {
         if (
           board &&
-          (board.container === boardId || board.containerObj?.getAttribute?.("id") === boardId)
+          (board.container === boardId ||
+            board.containerObj?.getAttribute?.("id") === boardId)
         ) {
           return board;
         }
@@ -186,7 +192,10 @@
     freeBoard(boardId);
 
     if (!previewNonce) {
-      showError(boardId, "VS Code did not grant the JSXGraph preview script a CSP nonce.");
+      showError(
+        boardId,
+        "VS Code did not grant the JSXGraph preview script a CSP nonce.",
+      );
       return;
     }
 
@@ -234,7 +243,10 @@
       } else {
         hosts.forEach((host) => {
           if (host instanceof HTMLElement && host.dataset.jsxgraphBoardId) {
-            showError(host.dataset.jsxgraphBoardId, "The JSXGraph runtime could not be loaded.");
+            showError(
+              host.dataset.jsxgraphBoardId,
+              "The JSXGraph runtime could not be loaded.",
+            );
           }
         });
       }
@@ -257,7 +269,10 @@
     }
     isDisposed = true;
     window.clearTimeout(runtimeLoadTimer);
-    window.removeEventListener("vscode.markdown.updateContent", handleContentUpdate);
+    window.removeEventListener(
+      "vscode.markdown.updateContent",
+      handleContentUpdate,
+    );
     for (const boardId of Array.from(managedBoards.keys())) {
       freeBoard(boardId);
     }

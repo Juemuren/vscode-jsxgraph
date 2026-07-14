@@ -46,7 +46,9 @@ async function run() {
     (result) => result?.items.some((item) => item.label === "querySelector"),
     "built-in TypeScript provider did not return DOM standard-library completions",
   );
-  assert.ok(domCompletions.items.some((item) => item.label === "querySelector"));
+  assert.ok(
+    domCompletions.items.some((item) => item.label === "querySelector"),
+  );
 
   const hovers = await eventually(
     () =>

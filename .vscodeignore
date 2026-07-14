@@ -9,6 +9,7 @@ images/examples/**
 *.env
 .gitignore
 .markdownlint.yaml
+biome.json
 tsconfig.json
 **/*.map
 **/*.ts

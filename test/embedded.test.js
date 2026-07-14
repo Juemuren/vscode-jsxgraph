@@ -22,13 +22,25 @@ test("creates offset-preserving virtual TypeScript content", () => {
   const codeStart = source.indexOf("const board");
 
   assert.equal(embedded.content.length > source.length, true);
-  assert.equal(embedded.content.slice(codeStart, codeStart + 11), "const board");
+  assert.equal(
+    embedded.content.slice(codeStart, codeStart + 11),
+    "const board",
+  );
   assert.equal(embedded.content.indexOf("# Example"), -1);
-  assert.equal(embedded.content.slice(0, "# Example".length), " ".repeat("# Example".length));
+  assert.equal(
+    embedded.content.slice(0, "# Example".length),
+    " ".repeat("# Example".length),
+  );
   assert.match(embedded.content.slice(source.length), /declare namespace JXG/);
-  assert.match(embedded.content.slice(source.length), /declare const BOARDID: string/);
+  assert.match(
+    embedded.content.slice(source.length),
+    /declare const BOARDID: string/,
+  );
   assert.equal(containsOffset(embedded.ranges, codeStart), true);
-  assert.equal(containsOffset(embedded.ranges, source.indexOf("# Example")), false);
+  assert.equal(
+    containsOffset(embedded.ranges, source.indexOf("# Example")),
+    false,
+  );
 });
 
 test("supports tilde and unterminated JSXGraph fences", () => {
@@ -36,7 +48,10 @@ test("supports tilde and unterminated JSXGraph fences", () => {
   const embedded = createEmbeddedDocument(source, "");
   const codeStart = source.indexOf("JXG.Options");
 
-  assert.equal(embedded.content.slice(codeStart, source.length), "JXG.Options;");
+  assert.equal(
+    embedded.content.slice(codeStart, source.length),
+    "JXG.Options;",
+  );
   assert.equal(containsOffset(embedded.ranges, source.length - 1), true);
 });
 
@@ -65,11 +80,15 @@ test("exposes JSXGraph declarations to a TypeScript language service", () => {
     getScriptFileNames: () => [fileName],
     getScriptVersion: () => "1",
     getScriptSnapshot: (requestedFile) => {
-      if (requestedFile.replaceAll("\\", "/").toLowerCase() === canonicalFileName) {
+      if (
+        requestedFile.replaceAll("\\", "/").toLowerCase() === canonicalFileName
+      ) {
         return ts.ScriptSnapshot.fromString(content);
       }
       const text = ts.sys.readFile(requestedFile);
-      return text === undefined ? undefined : ts.ScriptSnapshot.fromString(text);
+      return text === undefined
+        ? undefined
+        : ts.ScriptSnapshot.fromString(text);
     },
     getCurrentDirectory: () => __dirname,
     getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),

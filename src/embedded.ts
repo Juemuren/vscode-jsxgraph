@@ -21,7 +21,9 @@ export function createEmbeddedDocument(
   const ranges: OffsetRange[] = [];
   const lines = source.match(/.*(?:\r\n|\n|\r|$)/g) ?? [];
   let offset = 0;
-  let fence: { marker: string; length: number; contentStart: number } | undefined;
+  let fence:
+    | { marker: string; length: number; contentStart: number }
+    | undefined;
 
   for (const lineWithEnding of lines) {
     if (!lineWithEnding) {
@@ -30,7 +32,9 @@ export function createEmbeddedDocument(
     const line = lineWithEnding.replace(/[\r\n]+$/, "");
 
     if (!fence) {
-      const opening = line.match(/^( {0,3})(`{3,}|~{3,})\s*([^\s`~]+)?[^\r\n]*$/);
+      const opening = line.match(
+        /^( {0,3})(`{3,}|~{3,})\s*([^\s`~]+)?[^\r\n]*$/,
+      );
       if (opening && (opening[3] ?? "").toLowerCase() === "jsxgraph") {
         fence = {
           marker: opening[2][0],
@@ -65,11 +69,19 @@ export function createEmbeddedDocument(
   };
 }
 
-export function containsOffset(ranges: readonly OffsetRange[], offset: number): boolean {
+export function containsOffset(
+  ranges: readonly OffsetRange[],
+  offset: number,
+): boolean {
   return ranges.some((range) => offset >= range.start && offset < range.end);
 }
 
-function copyRange(source: string, output: string[], start: number, end: number): void {
+function copyRange(
+  source: string,
+  output: string[],
+  start: number,
+  end: number,
+): void {
   for (let index = start; index < end; index += 1) {
     output[index] = source[index];
   }

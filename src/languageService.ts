@@ -8,7 +8,9 @@ import {
 
 const embeddedScheme = "jsxgraph-embedded";
 
-class EmbeddedDocuments implements vscode.TextDocumentContentProvider, vscode.Disposable {
+class EmbeddedDocuments
+  implements vscode.TextDocumentContentProvider, vscode.Disposable
+{
   private readonly contents = new Map<string, string>();
   private readonly changes = new vscode.EventEmitter<vscode.Uri>();
 
@@ -25,7 +27,10 @@ class EmbeddedDocuments implements vscode.TextDocumentContentProvider, vscode.Di
     readonly embedded: EmbeddedDocument;
   } {
     const uri = this.uriFor(document.uri);
-    const embedded = createEmbeddedDocument(document.getText(), this.declarations);
+    const embedded = createEmbeddedDocument(
+      document.getText(),
+      this.declarations,
+    );
     const key = uri.toString();
     if (this.contents.get(key) !== embedded.content) {
       this.contents.set(key, embedded.content);
@@ -52,11 +57,15 @@ class EmbeddedDocuments implements vscode.TextDocumentContentProvider, vscode.Di
   }
 }
 
-export function registerLanguageFeatures(context: vscode.ExtensionContext): void {
+export function registerLanguageFeatures(
+  context: vscode.ExtensionContext,
+): void {
   const declarationPath = context.asAbsolutePath(
     "node_modules/jsxgraph/src/index.d.ts",
   );
-  const documents = new EmbeddedDocuments(readFileSync(declarationPath, "utf8"));
+  const documents = new EmbeddedDocuments(
+    readFileSync(declarationPath, "utf8"),
+  );
   const selector: vscode.DocumentSelector = [
     { language: "markdown", scheme: "file" },
     { language: "markdown", scheme: "untitled" },
@@ -64,7 +73,10 @@ export function registerLanguageFeatures(context: vscode.ExtensionContext): void
 
   context.subscriptions.push(
     documents,
-    vscode.workspace.registerTextDocumentContentProvider(embeddedScheme, documents),
+    vscode.workspace.registerTextDocumentContentProvider(
+      embeddedScheme,
+      documents,
+    ),
     vscode.workspace.onDidCloseTextDocument((document) => {
       if (document.languageId === "markdown") {
         documents.remove(document);
@@ -73,7 +85,12 @@ export function registerLanguageFeatures(context: vscode.ExtensionContext): void
     vscode.languages.registerCompletionItemProvider(
       selector,
       {
-        provideCompletionItems: async (document, position, _token, completionContext) => {
+        provideCompletionItems: async (
+          document,
+          position,
+          _token,
+          completionContext,
+        ) => {
           const { uri, embedded } = documents.update(document);
           if (!containsOffset(embedded.ranges, document.offsetAt(position))) {
             return undefined;
