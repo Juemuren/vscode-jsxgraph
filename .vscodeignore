@@ -1,11 +1,13 @@
 .github/**
 .vscode/**
+.vscode-test/**
 src/**
 test/**
 docs/**
 images/examples/**
+*.log
+*.env
 .gitignore
-.env
 .markdownlint.yaml
 tsconfig.json
 **/*.map
