@@ -1,57 +1,60 @@
-# JSXGraph Markdown
+# JSXGraph for VSCode
 
-A VS Code extension for rendering `jsxgraph` fenced code blocks in Markdown and
-providing JavaScript language features inside those blocks.
+A VS Code extension for rendering `jsxgraph` fenced code blocks in Markdown and providing JavaScript language features inside those blocks.
 
 ## Features
 
 - Render JSXGraph diagrams in VS Code's built-in Markdown preview.
 - Refresh diagrams automatically when the Markdown document changes.
-- Execute diagram code under VS Code's existing CSP without `eval`,
-  `new Function`, or disabling Markdown preview security.
-- JavaScript syntax highlighting, completion, and hover documentation inside
-  `jsxgraph` fences, including typed `JXG` and `BOARDID` globals.
+- Execute diagram code under VS Code's existing CSP without disabling Markdown preview security.
+- JavaScript syntax highlighting, completion, and hover documentation inside `jsxgraph` fences, including typed `JXG` and `BOARDID` globals.
+
+## Install
+
+### From extension marketplace
+
+Not yet
+
+### From source code
+
+```sh
+# Clone the repository
+git clone https://github.com/juemuren/vscode-jsxgraph.git
+cd vscode-jsxgraph
+# Package
+npx @vscode/vsce package
+# Install
+code --install-extension vscode-jsxgraph-*.vsix
+```
 
 ## Usage
 
-Open VS Code's normal Markdown preview and initialize a board with the injected
-`BOARDID`:
+Open VS Code's normal Markdown preview and initialize a board with the injected `BOARDID`:
 
 ````markdown
 ```jsxgraph
 const board = JXG.JSXGraph.initBoard(BOARDID, {
   boundingbox: [-5, 5, 5, -5],
   axis: true,
+  showCopyright: false,
 });
 
-board.create("point", [1, 2], { name: "A" });
-board.create("circle", [[0, 0], 3]);
+const center = board.create("point", [0, 0], { name: "O" });
+const point = board.create("point", [2, 1], { name: "A" });
+board.create("circle", [center, point]);
 ```
 ````
 
 Each block receives these internal variables:
 
 - `JXG`: the JSXGraph namespace.
-- `BOARDID`: the unique ID of the generated board element. Pass it as the first
-  argument to `JXG.JSXGraph.initBoard`.
-
-The extension reuses the CSP nonce granted to its own contributed preview script
-to execute each `jsxgraph` block as an authorized inline script. It never enables
-`unsafe-eval` and never scans unrelated scripts for a nonce. The extension is
-disabled in untrusted workspaces because diagram code runs inside the Markdown
-preview page. Rendering errors are shown in place of the corresponding diagram.
-
-For a ready-to-run document, open [examples/basic.md](examples/basic.md) in the
-Extension Development Host and open the built-in Markdown preview.
-
-See [TODO.md](TODO.md) for the initial requirements.
+- `BOARDID`: the unique ID of the generated board element. Pass it as the first argument to `JXG.JSXGraph.initBoard`.
 
 ## Development
 
-```powershell
+```sh
 npm install
 npm run compile
 ```
 
-Press `F5` in VS Code to compile the project and launch an Extension Development
-Host.
+Press `F5` in VS Code to compile the project and launch an Extension Development Host.
