@@ -1,22 +1,48 @@
+import { Buffer } from "node:buffer";
 import type MarkdownIt from "markdown-it";
+import type { Renderer, Token } from "markdown-it";
 import type { ExtensionContext } from "vscode";
 
-/**
- * Activates the extension host portion of JSXGraph Markdown.
- *
- * Rendering and embedded-language support will be registered here as they are
- * implemented. Keeping activation side-effect free gives the initial scaffold
- * a stable entry point that can already be launched in an Extension Host.
- */
-export function activate(_context: ExtensionContext): void {}
+export interface MarkdownItExtensionApi {
+  extendMarkdownIt: typeof extendMarkdownIt;
+}
+
+export function activate(_context?: ExtensionContext): MarkdownItExtensionApi {
+  return { extendMarkdownIt };
+}
 
 export function deactivate(): void {}
 
-/**
- * VS Code's built-in Markdown extension calls this hook when constructing its
- * preview parser. Future JSXGraph fence rendering will extend this instance.
- */
 export function extendMarkdownIt(markdownIt: MarkdownIt): MarkdownIt {
+  const defaultFence = markdownIt.renderer.rules.fence;
+  let diagramId = 0;
+
+  markdownIt.renderer.rules.fence = (
+    tokens: Token[],
+    index: number,
+    options: MarkdownIt.Options,
+    env: unknown,
+    self: Renderer,
+  ): string => {
+    const token = tokens[index];
+    const language = token.info.trim().split(/\s+/, 1)[0].toLowerCase();
+
+    if (language !== "jsxgraph") {
+      return defaultFence
+        ? defaultFence(tokens, index, options, env, self)
+        : self.renderToken(tokens, index, options);
+    }
+
+    const id = `jsxgraph-board-${++diagramId}`;
+    const source = Buffer.from(token.content, "utf8").toString("base64");
+
+    return [
+      `<div class="jsxgraph-preview" data-jsxgraph-source="${source}">`,
+      `<div id="${id}" class="jxgbox jsxgraph-board" role="img" aria-label="JSXGraph diagram"></div>`,
+      '<pre class="jsxgraph-error" role="alert" hidden></pre>',
+      "</div>",
+    ].join("");
+  };
+
   return markdownIt;
 }
-

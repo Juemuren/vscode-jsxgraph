@@ -1,6 +1,6 @@
 # 目标
 
-编写 VSCode 插件，实现以下功能
+编写 VSCode 插件，基于 [JSXGraph](https://github.com/jsxgraph/jsxgraph) 实现以下功能
 
 ## 渲染
 
@@ -11,6 +11,11 @@
 // ...
 ```
 ````
+
+实现方式
+
+- 在 VS Code 内置 Markdown 预览中加载 JSXGraph，并执行代码块内容。
+- 代码块内可直接使用 `JXG`。调用 `JXG.JSXGraph.initBoard` 时需使用内部的 `BOARDID` 变量。
 
 ## 语言服务
 

@@ -1,9 +1,9 @@
 .github/**
 .vscode/**
 src/**
+test/**
 .gitignore
 tsconfig.json
 TODO.md
 **/*.map
 **/*.ts
-
