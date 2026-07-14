@@ -1,12 +1,12 @@
-# JSXGraph for VSCode
-
 <div align="center">
 
-English | [中文](README.zh.md)
+# JSXGraph for VSCode
+
+English | [中文](docs/README.zh.md)
 
 </div>
 
-A VS Code extension that renders code blocks marked with `jsxgraph` in Markdown previews and provides JavaScript language services within them.
+A VS Code extension that renders [JSXGraph](https://github.com/jsxgraph/jsxgraph) diagrams in Markdown previews and provides JavaScript language services within the code blocks marked with `jsxgraph`.
 
 ![preview](images/examples/preview.png)
 

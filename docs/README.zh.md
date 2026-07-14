@@ -1,24 +1,24 @@
-# JSXGraph for VSCode
-
 <div align="center">
 
-[English](README.md) | 中文
+# JSXGraph for VSCode
+
+[English](../README.md) | 中文
 
 </div>
 
-一个 VS Code 扩展，用于在 Markdown 预览中渲染用 `jsxgraph` 标记的代码块，并在其中提供 JavaScript 语言服务。
+一个 VS Code 扩展，用于在 Markdown 预览中渲染 [JSXGraph](https://github.com/jsxgraph/jsxgraph) 图表，并在 `jsxgraph` 标记的代码块中提供 JavaScript 语言服务。
 
-![preview](images/examples/preview.png)
+![preview](../images/examples/preview.png)
 
 ## 功能
 
 - 在 VS Code 内置的 Markdown 预览中实时渲染可交互的 JSXGraph 图形
 
-![interactive-diagrams](images/examples/interactive-diagrams.gif)
+![interactive-diagrams](../images/examples/interactive-diagrams.gif)
 
 - 用 VS Code 内置的 JavaScript 语言功能为 `jsxgraph` 代码块提供语法高亮、代码补全和悬停文档，包括带类型信息的 `JXG` 全局变量
 
-![language-service](images/examples/language-service.gif)
+![language-service](../images/examples/language-service.gif)
 
 ## 特点
 
