@@ -18,10 +18,3 @@ node_modules/jsxgraph/**
 !node_modules/jsxgraph/src/index.d.ts
 !node_modules/jsxgraph/distrib/jsxgraphcore.js
 !node_modules/jsxgraph/distrib/jsxgraph.css
-
-node_modules/typescript/**
-!node_modules/typescript/package.json
-!node_modules/typescript/LICENSE.txt
-!node_modules/typescript/ThirdPartyNoticeText.txt
-!node_modules/typescript/lib/typescript.js
-!node_modules/typescript/lib/lib*.d.ts

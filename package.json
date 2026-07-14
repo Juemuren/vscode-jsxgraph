@@ -72,10 +72,10 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.15.0",
     "@types/vscode": "^1.100.0",
-    "markdown-it": "^14.3.0"
+    "markdown-it": "^14.3.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "jsxgraph": "^1.12.2",
-    "typescript": "^5.8.3"
+    "jsxgraph": "^1.12.2"
   }
 }
