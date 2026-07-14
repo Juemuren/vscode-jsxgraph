@@ -1,9 +1,22 @@
 (function () {
   "use strict";
 
+  const controllerKey = "__jsxgraphMarkdownController";
+  const previousController = window[controllerKey];
+  if (previousController && typeof previousController.dispose === "function") {
+    previousController.dispose();
+  }
+
+  // Capture only the nonce granted to this contributed preview script. We do
+  // not scan unrelated scripts or parse the CSP meta tag for credentials.
+  const previewNonce = document.currentScript && document.currentScript.nonce;
+  const renderedSources = new WeakMap();
+  const managedBoards = new Map();
+  const runnerName = `__jsxgraphMarkdownRun_${Math.random().toString(36).slice(2)}`;
   const maxRuntimeLoadAttempts = 100;
   let runtimeLoadAttempts = 0;
   let runtimeLoadTimer;
+  let isDisposed = false;
 
   function decodeSource(encoded) {
     const binary = window.atob(encoded);
@@ -11,90 +24,201 @@
     return new TextDecoder().decode(bytes);
   }
 
-  function showError(host, error) {
-    const output = host.querySelector(".jsxgraph-error");
-    if (!(output instanceof HTMLElement)) {
+  function findHost(boardId) {
+    const boardElement = document.getElementById(boardId);
+    return boardElement && boardElement.closest(".jsxgraph-preview");
+  }
+
+  function showError(boardId, error) {
+    const host = findHost(boardId);
+    if (!(host instanceof HTMLElement)) {
       return;
     }
 
-    const message = error instanceof Error ? error.message : String(error);
+    const output = host.querySelector(".jsxgraph-error");
+    const message = error instanceof Error ? error.stack || error.message : String(error);
     host.classList.add("has-error");
-    output.textContent = `JSXGraph render failed: ${message}`;
-    output.hidden = false;
+    if (output instanceof HTMLElement) {
+      output.textContent = `JSXGraph render failed: ${message}`;
+      output.hidden = false;
+    }
   }
 
-  function render(host) {
-    if (!(host instanceof HTMLElement) || host.dataset.jsxgraphRendered === "true") {
-      return true;
+  function clearError(host) {
+    const output = host.querySelector(".jsxgraph-error");
+    host.classList.remove("has-error");
+    if (output instanceof HTMLElement) {
+      output.textContent = "";
+      output.hidden = true;
+    }
+  }
+
+  function findBoard(boardId) {
+    const registries = [window.JXG && window.JXG.boards, window.JXG?.JSXGraph?.boards];
+    for (const registry of registries) {
+      if (!registry || typeof registry !== "object") {
+        continue;
+      }
+      for (const board of Object.values(registry)) {
+        if (
+          board &&
+          (board.container === boardId || board.containerObj?.getAttribute?.("id") === boardId)
+        ) {
+          return board;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  function freeBoard(boardId) {
+    const board = managedBoards.get(boardId) || findBoard(boardId);
+    if (board && window.JXG?.JSXGraph?.freeBoard) {
+      try {
+        window.JXG.JSXGraph.freeBoard(board);
+      } catch (error) {
+        console.warn(`Unable to release JSXGraph board ${boardId}:`, error);
+      }
+    }
+    managedBoards.delete(boardId);
+  }
+
+  function cleanupDetachedBoards() {
+    for (const boardId of managedBoards.keys()) {
+      if (!document.getElementById(boardId)) {
+        freeBoard(boardId);
+      }
+    }
+  }
+
+  function runDiagram(boardId, callback) {
+    try {
+      callback(window.JXG, boardId);
+      const board = findBoard(boardId);
+      if (!board) {
+        throw new Error(
+          `No JSXGraph board was initialized for BOARDID "${boardId}". ` +
+            "Call JXG.JSXGraph.initBoard(BOARDID, options).",
+        );
+      }
+      managedBoards.set(boardId, board);
+    } catch (error) {
+      const board = findBoard(boardId);
+      if (board) {
+        managedBoards.set(boardId, board);
+      }
+      showError(boardId, error);
+    }
+  }
+
+  Object.defineProperty(window, runnerName, {
+    configurable: true,
+    value: runDiagram,
+  });
+
+  function executeDiagram(host) {
+    if (!(host instanceof HTMLElement)) {
+      return;
     }
 
-    const element = host.querySelector(".jsxgraph-board");
     const encoded = host.dataset.jsxgraphSource;
-
-    if (!(element instanceof HTMLElement) || !encoded) {
-      host.dataset.jsxgraphRendered = "true";
-      showError(host, "The generated diagram container is invalid.");
-      return true;
+    const boardId = host.dataset.jsxgraphBoardId;
+    if (!encoded || !boardId) {
+      return;
     }
 
-    if (!window.JXG) {
-      return false;
+    const signature = `${boardId}:${encoded}`;
+    if (renderedSources.get(host) === signature) {
+      return;
+    }
+    renderedSources.set(host, signature);
+    clearError(host);
+    freeBoard(boardId);
+
+    if (!previewNonce) {
+      showError(boardId, "VS Code did not grant the JSXGraph preview script a CSP nonce.");
+      return;
     }
 
-    host.dataset.jsxgraphRendered = "true";
+    let syntaxError;
+    const captureScriptError = (event) => {
+      syntaxError = event.error || event.message;
+    };
+    window.addEventListener("error", captureScriptError);
 
     try {
       const source = decodeSource(encoded);
-      const execute = new Function(
-        "JXG",
-        "BOARDID",
-        `"use strict";\n${source}\n//# sourceURL=jsxgraph-markdown-preview.js`,
-      );
-      execute(window.JXG, element.id);
+      const script = document.createElement("script");
+      script.nonce = previewNonce;
+      script.textContent = [
+        `globalThis[${JSON.stringify(runnerName)}](${JSON.stringify(boardId)}, function (JXG, BOARDID) {`,
+        '"use strict";',
+        source,
+        "});",
+      ].join("\n");
+      document.body.appendChild(script);
+      script.remove();
     } catch (error) {
-      const isContentSecurityPolicyError =
-        error instanceof EvalError || /unsafe-eval|Content Security Policy/i.test(String(error));
-
-      if (isContentSecurityPolicyError) {
-        showError(
-          host,
-          "JavaScript execution is blocked by Markdown preview security. " +
-            "Run ‘Markdown: Change Preview Security Settings’ and select ‘Disable’.",
-        );
-      } else {
-        showError(host, error);
-      }
+      showError(boardId, error);
+    } finally {
+      window.removeEventListener("error", captureScriptError);
     }
 
-    return true;
+    if (syntaxError) {
+      showError(boardId, syntaxError);
+    }
   }
 
   function renderAll() {
-    const hosts = Array.from(document.querySelectorAll(".jsxgraph-preview"));
-    const isRuntimePending = hosts.some((host) => !render(host));
-
-    window.clearTimeout(runtimeLoadTimer);
-    if (isRuntimePending && runtimeLoadAttempts < maxRuntimeLoadAttempts) {
-      runtimeLoadAttempts += 1;
-      runtimeLoadTimer = window.setTimeout(renderAll, 50);
-    } else if (isRuntimePending) {
-      hosts.forEach((host) => {
-        if (host instanceof HTMLElement && host.dataset.jsxgraphRendered !== "true") {
-          host.dataset.jsxgraphRendered = "true";
-          showError(host, "The JSXGraph runtime could not be loaded.");
-        }
-      });
+    if (isDisposed) {
+      return;
     }
+
+    cleanupDetachedBoards();
+    const hosts = Array.from(document.querySelectorAll(".jsxgraph-preview"));
+    if (!window.JXG) {
+      window.clearTimeout(runtimeLoadTimer);
+      if (runtimeLoadAttempts < maxRuntimeLoadAttempts) {
+        runtimeLoadAttempts += 1;
+        runtimeLoadTimer = window.setTimeout(renderAll, 50);
+      } else {
+        hosts.forEach((host) => {
+          if (host instanceof HTMLElement && host.dataset.jsxgraphBoardId) {
+            showError(host.dataset.jsxgraphBoardId, "The JSXGraph runtime could not be loaded.");
+          }
+        });
+      }
+      return;
+    }
+
+    runtimeLoadAttempts = 0;
+    hosts.forEach(executeDiagram);
   }
+
+  function handleContentUpdate() {
+    runtimeLoadAttempts = 0;
+    window.setTimeout(renderAll, 0);
+  }
+
+  function dispose() {
+    if (isDisposed) {
+      return;
+    }
+    isDisposed = true;
+    window.clearTimeout(runtimeLoadTimer);
+    window.removeEventListener("vscode.markdown.updateContent", handleContentUpdate);
+    for (const boardId of Array.from(managedBoards.keys())) {
+      freeBoard(boardId);
+    }
+    delete window[runnerName];
+  }
+
+  window[controllerKey] = { dispose };
+  window.addEventListener("vscode.markdown.updateContent", handleContentUpdate);
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", renderAll, { once: true });
   } else {
     renderAll();
   }
-
-  window.addEventListener("vscode.markdown.updateContent", () => {
-    runtimeLoadAttempts = 0;
-    renderAll();
-  });
 })();

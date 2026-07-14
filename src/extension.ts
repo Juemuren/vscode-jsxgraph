@@ -33,12 +33,12 @@ export function extendMarkdownIt(markdownIt: MarkdownIt): MarkdownIt {
         : self.renderToken(tokens, index, options);
     }
 
-    const id = `jsxgraph-board-${++diagramId}`;
+    const boardId = `jsxgraph-board-${++diagramId}`;
     const source = Buffer.from(token.content, "utf8").toString("base64");
 
     return [
-      `<div class="jsxgraph-preview" data-jsxgraph-source="${source}">`,
-      `<div id="${id}" class="jxgbox jsxgraph-board" role="img" aria-label="JSXGraph diagram"></div>`,
+      `<div class="jsxgraph-preview" data-jsxgraph-source="${source}" data-jsxgraph-board-id="${boardId}">`,
+      `<div id="${boardId}" class="jxgbox jsxgraph-board" role="img" aria-label="JSXGraph diagram"></div>`,
       '<pre class="jsxgraph-error" role="alert" hidden></pre>',
       "</div>",
     ].join("");

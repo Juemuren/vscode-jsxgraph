@@ -30,13 +30,13 @@
   "main": "./out/extension.js",
   "contributes": {
     "markdown.markdownItPlugins": true,
-    "markdown.previewStyles": [
-      "./node_modules/jsxgraph/distrib/jsxgraph.css",
-      "./media/preview.css"
-    ],
     "markdown.previewScripts": [
       "./node_modules/jsxgraph/distrib/jsxgraphcore.js",
       "./media/preview.js"
+    ],
+    "markdown.previewStyles": [
+      "./node_modules/jsxgraph/distrib/jsxgraph.css",
+      "./media/preview.css"
     ]
   },
   "scripts": {

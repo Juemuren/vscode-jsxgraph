@@ -9,23 +9,24 @@ test("exposes the Markdown-It hook through the activation API", () => {
   assert.equal(activate().extendMarkdownIt, extendMarkdownIt);
 });
 
-test("exposes JXG and BOARDID to diagram code", () => {
-  const previewScript = readFileSync(join(__dirname, "..", "media", "preview.js"), "utf8");
-
-  assert.match(previewScript, /new Function\(\s*"JXG",\s*"BOARDID",/);
-  assert.doesNotMatch(previewScript, /new Function\(\s*"JXG",\s*"container"/);
-});
-
-test("renders jsxgraph fences as diagram hosts", () => {
+test("renders jsxgraph fences as nonce-execution hosts", () => {
   const markdown = extendMarkdownIt(new MarkdownIt());
-  const html = markdown.render(
-    "```jsxgraph\nJXG.JSXGraph.initBoard(BOARDID, { axis: true });\n```\n",
-  );
+  const source = 'JXG.JSXGraph.initBoard(BOARDID, { title: "圆" });';
+  const html = markdown.render(`\`\`\`jsxgraph\n${source}\n\`\`\`\n`);
 
   assert.match(html, /class="jsxgraph-preview"/);
-  assert.match(html, /id="jsxgraph-board-1"/);
-  assert.match(html, /data-jsxgraph-source="[A-Za-z0-9+/=]+"/);
-  assert.doesNotMatch(html, /initBoard|BOARDID/);
+  assert.match(html, /data-jsxgraph-board-id="jsxgraph-board-1"/);
+  const encoded = html.match(/data-jsxgraph-source="([A-Za-z0-9+/=]+)"/)[1];
+  assert.equal(Buffer.from(encoded, "base64").toString("utf8"), `${source}\n`);
+  assert.doesNotMatch(html, /initBoard|BOARDID|圆/);
+});
+
+test("assigns a unique BOARDID host to each diagram", () => {
+  const markdown = extendMarkdownIt(new MarkdownIt());
+  const html = markdown.render("```jsxgraph\nfirst();\n```\n```jsxgraph\nsecond();\n```\n");
+
+  assert.match(html, /data-jsxgraph-board-id="jsxgraph-board-1"/);
+  assert.match(html, /data-jsxgraph-board-id="jsxgraph-board-2"/);
 });
 
 test("leaves other fenced languages unchanged", () => {
@@ -35,4 +36,15 @@ test("leaves other fenced languages unchanged", () => {
   assert.match(html, /language-js/);
   assert.match(html, /console\.log/);
   assert.doesNotMatch(html, /jsxgraph-preview/);
+});
+
+test("uses only its own CSP nonce without eval", () => {
+  const previewScript = readFileSync(join(__dirname, "..", "media", "preview.js"), "utf8");
+
+  assert.match(previewScript, /document\.currentScript && document\.currentScript\.nonce/);
+  assert.match(previewScript, /script\.nonce = previewNonce/);
+  assert.match(previewScript, /script\.textContent =/);
+  assert.match(previewScript, /vscode\.markdown\.updateContent/);
+  assert.match(previewScript, /JSXGraph\.freeBoard/);
+  assert.doesNotMatch(previewScript, /\beval\s*\(|new Function|querySelectorAll\("script\[nonce\]"\)/);
 });
