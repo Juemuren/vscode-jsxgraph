@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0
+
+- Adapt JSXGraph board backgrounds, text, labels, axes, ticks, and sliders to
+  VS Code light and dark themes by default.
+- Keep theme-aware JSXGraph defaults overridable through `JXG.Options`, board
+  options, and per-element attributes.
+- Update rendered theme colors automatically when the active VS Code theme
+  changes.
+
 ## 0.0.1
 
 - Initialize the TypeScript VS Code extension project.

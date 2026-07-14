@@ -17,6 +17,64 @@
   let runtimeLoadAttempts = 0;
   let runtimeLoadTimer;
   let isDisposed = false;
+  let defaultsConfigured = false;
+
+  function configureDefaults() {
+    if (defaultsConfigured || !window.JXG?.Options) {
+      return;
+    }
+
+    const foreground = "var(--vscode-editor-foreground, #1f1f1f)";
+    const background = "var(--vscode-editor-background, #ffffff)";
+    const mutedForeground =
+      "var(--vscode-descriptionForeground, var(--vscode-editor-foreground, #666666))";
+    const options = window.JXG.Options;
+
+    Object.assign(options.text, {
+      strokeColor: foreground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.label, {
+      strokeColor: foreground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.axis, {
+      strokeColor: mutedForeground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.axis.ticks, {
+      strokeColor: mutedForeground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.ticks, {
+      strokeColor: mutedForeground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.slider, {
+      strokeColor: foreground,
+      highlightStrokeColor: foreground,
+      fillColor: background,
+      highlightFillColor: background,
+    });
+    Object.assign(options.slider.baseline, {
+      strokeColor: mutedForeground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.slider.ticks, {
+      strokeColor: mutedForeground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.slider.highline, {
+      strokeColor: foreground,
+      highlightStrokeColor: foreground,
+    });
+    Object.assign(options.slider.label, {
+      strokeColor: foreground,
+      highlightStrokeColor: foreground,
+    });
+
+    defaultsConfigured = true;
+  }
 
   function decodeSource(encoded) {
     const binary = window.atob(encoded);
@@ -192,6 +250,7 @@
     }
 
     runtimeLoadAttempts = 0;
+    configureDefaults();
     hosts.forEach(executeDiagram);
   }
 
