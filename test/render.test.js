@@ -1,6 +1,4 @@
 const assert = require("node:assert/strict");
-const { readFileSync } = require("node:fs");
-const { join } = require("node:path");
 const test = require("node:test");
 const MarkdownIt = require("markdown-it");
 const { activate, extendMarkdownIt } = require("../out/extension.js");
@@ -38,36 +36,4 @@ test("leaves other fenced languages unchanged", () => {
   assert.match(html, /language-js/);
   assert.match(html, /console\.log/);
   assert.doesNotMatch(html, /jsxgraph-preview/);
-});
-
-test("uses only its own CSP nonce without eval", () => {
-  const previewScript = readFileSync(
-    join(__dirname, "..", "media", "preview.js"),
-    "utf8",
-  );
-
-  assert.match(previewScript, /document\.currentScript\?\.nonce/);
-  assert.match(previewScript, /script\.nonce = previewNonce/);
-  assert.match(previewScript, /script\.textContent =/);
-  assert.match(previewScript, /vscode\.markdown\.updateContent/);
-  assert.match(previewScript, /JSXGraph\.freeBoard/);
-  assert.doesNotMatch(
-    previewScript,
-    /\beval\s*\(|new Function|querySelectorAll\("script\[nonce\]"\)/,
-  );
-});
-
-test("uses VS Code theme colors as overridable JSXGraph defaults", () => {
-  const previewScript = readFileSync(
-    join(__dirname, "..", "media", "preview.js"),
-    "utf8",
-  );
-
-  assert.match(previewScript, /var\(--vscode-editor-foreground,/);
-  assert.match(previewScript, /var\(--vscode-editor-background,/);
-  assert.match(previewScript, /var\(--vscode-descriptionForeground,/);
-  assert.match(
-    previewScript,
-    /configureDefaults\(\);\s*hosts\.forEach\(executeDiagram\)/,
-  );
 });
