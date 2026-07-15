@@ -165,6 +165,6 @@ test("configures VS Code theme colors before executing diagrams", () => {
   );
   assert.equal(
     harness.options.ticks.strokeColor,
-    "var(--vscode-descriptionForeground, var(--vscode-editor-foreground, #666666))",
+    "var(--vscode-descriptionForeground, #666666)",
   );
 });
