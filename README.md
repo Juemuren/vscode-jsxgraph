@@ -14,11 +14,11 @@ A VS Code extension that renders [JSXGraph](https://github.com/jsxgraph/jsxgraph
 
 - Render interactive JSXGraph diagrams in real time in VS Code's built-in Markdown preview
 
-![interactive-diagrams](images/examples/interactive-diagrams.gif)
+![interactive-diagrams](images/examples/interactive-diagrams.webp)
 
 - Use VS Code's built-in JavaScript language features to provide syntax highlighting, code completion, and hover documentation for `jsxgraph` code blocks, including the typed `JXG` global variable
 
-![language-service](images/examples/language-service.gif)
+![language-service](images/examples/language-service.webp)
 
 ## Highlights
 

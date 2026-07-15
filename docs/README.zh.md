@@ -14,18 +14,18 @@
 
 - 在 VS Code 内置的 Markdown 预览中实时渲染可交互的 JSXGraph 图形
 
-![interactive-diagrams](../images/examples/interactive-diagrams.gif)
+![interactive-diagrams](../images/examples/interactive-diagrams.webp)
 
 - 用 VS Code 内置的 JavaScript 语言功能为 `jsxgraph` 代码块提供语法高亮、代码补全和悬停文档，包括带类型信息的 `JXG` 全局变量
 
-![language-service](../images/examples/language-service.gif)
+![language-service](../images/examples/language-service.webp)
 
 ## 特点
 
 - **原生 Markdown 预览集成**：直接在 VS Code 内置的 Markdown 预览中渲染 `jsxgraph` 代码块。
 - **轻量 TypeScript 语言服务**：复用 VS Code 内置的 TypeScript 语言服务，扩展不携带重复的运行时和标准库以减小安装体积。
 - **保留 JSXGraph 交互能力**：可根据画板配置拖动元素、平移画板，以及使用滚轮或触摸手势缩放。
-- **适配 VSCode 主题**：文本、坐标轴和滑块等元素的默认颜色跟随当前主题，同时仍可在画板代码中覆盖。
+- **适配 VSCode 主题**：文本、滑块等元素的默认颜色会跟随当前的编辑器主题，同时仍可在画板中用代码进行覆盖。
 - **自适应宽度**：画板填满预览区域的可用宽度，并在容器尺寸变化时自动更新。
 - **实时重渲染**：Markdown 文本更新后自动重新渲染图形，并释放旧的画板实例。
 - **兼容安全策略**：使用 VS Code 分配的 CSP nonce 执行图形代码，不需要降低 Markdown 预览的安全设置。
