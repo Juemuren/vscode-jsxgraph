@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- Improve JSXGraph board lifecycle handling when Markdown preview content is
+  refreshed, including cleanup of detached boards and clearer runtime loading
+  and diagram execution errors.
+- Update the README examples with WebP-based previews.
+
 ## 0.2.0
 
 - Reuse VS Code's built-in TypeScript language service for completion and hover
